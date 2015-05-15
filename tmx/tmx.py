@@ -2,24 +2,34 @@ from lxml import etree as ET
 from tmx.tu import TU
 
 
+def fromstring(xml_string):
+    return Tmx(fromstring=xml_string)
+
+
+def fromfile(filename):
+    return Tmx(filename=filename)
+
+
 class Tmx(object):
 
     """class wrapped around Elementtree to represent Translation Memory
      in TMX format"""
 
-    def __init__(self, filename=''):
+    def __init__(self, filename='', fromstring=''):
         self.trans_units = []
         self.properties = dict()
         self.attributes = dict()
         if filename:
-            self.tmx = ET.parse(filename).getroot()
-            if self.tmx.tag != 'tmx':
-                raise AttributeError("Not valid TMX")
-            self.trans_units = [TU(tu) for tu in self.tmx.iter(tag="tu")]
-            self.attributes.update(self.tmx.find('header').attrib)
+            self.tmx = ET.parse(filename)
+        if fromstring:
+            self.tmx = ET.fromstring(fromstring)
+        if self.tmx.tag != 'tmx':
+            raise AttributeError("Not valid TMX")
+        self.trans_units = [TU(tu) for tu in self.tmx.iter(tag="tu")]
+        self.attributes.update(self.tmx.find('header').attrib)
 
-            for prop in self.tmx[0].findall('prop'):
-                self.properties[prop.attrib['type']] = prop.text
+        for prop in self.tmx[0].findall('prop'):
+            self.properties[prop.attrib['type']] = prop.text
 
     @classmethod
     def create(self, tmx_source):

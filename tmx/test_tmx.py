@@ -1,5 +1,9 @@
 import unittest
+from unittest.mock import patch
+from tmx.tmx import fromstring
+from tmx.tmx import fromfile
 from tmx.tmx import Tmx
+from lxml import etree as ET
 
 
 class TestTMXUnit(unittest.TestCase):
@@ -45,20 +49,35 @@ o-tmf="MemoQTM" datatype="unknown">
   </tu>
   </body>
   </tmx>'''
-        self.sample_tmx = Tmx.create(self.sample)
+        self.filename = 'sample.tmx'
 
     def tearDown(self):
         pass
 
+    def test_create_from_string_returns_proper_Tmx_object(self):
+        self.assertIsInstance(fromstring(self.sample), Tmx)
+
+    @patch('tmx.tmx.ET')
+    def test_create_from_file_returns_proper_Tmx_object(self, mock):
+        mock.parse.return_value = ET.fromstring(self.sample)
+
+        sample_tmx = fromfile(self.filename)
+
+        self.assertEqual(mock.parse.called, True)
+        self.assertIsInstance(sample_tmx, Tmx)
+
     def test_length_returns_proper_value(self):
-        self.assertEqual(len(self.sample_tmx), 1)
+        self.assertEqual(len(fromstring(self.sample)), 1)
 
     def test_custom_properties_are_not_empty(self):
-        self.assertEqual(len(self.sample_tmx.properties), 7)
+
+        tmx = fromstring(self.sample)
+        self.assertEqual(len(tmx.properties), 7)
 
     def test_tmx_attributes_are_not_empty(self):
-        self.assertEqual(len(self.sample_tmx.attributes), 8)
 
+        tmx = fromstring(self.sample)
+        self.assertEqual(len(tmx.attributes), 8)
 
 if __name__ == '__main__':
     unittest.main()
