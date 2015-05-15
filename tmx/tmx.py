@@ -31,18 +31,6 @@ class Tmx(object):
         for prop in self.tmx[0].findall('prop'):
             self.properties[prop.attrib['type']] = prop.text
 
-    @classmethod
-    def create(self, tmx_source):
-        new_tmx = Tmx()
-        new_tmx.tmx = ET.parse(tmx_source).getroot()
-        new_tmx.trans_units = [TU(tu) for tu in new_tmx.tmx.iter(tag="tu")]
-
-        new_tmx.attributes.update(new_tmx.tmx.find('header').attrib)
-
-        # for prop in new_tmx.tmx[0].findall('prop'):
-        #     new_tmx.properties[prop.attrib['type']] = prop.text
-        return new_tmx
-
     def __len__(self):
         '''gets number of translation units'''
         return len(self.trans_units)
