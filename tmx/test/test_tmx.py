@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-import tmx
+
 from tmx import fromstring
 from tmx import fromfile
 from tmx import Tmx

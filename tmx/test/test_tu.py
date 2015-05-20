@@ -84,7 +84,7 @@ class TestTU(unittest.TestCase):
         self.assertEqual(
             updated_tu.attributes['changeid'],
             'FooBaz',
-            'creationid not updated')
+            'changeid not updated')
 
     def test_equal_returns_true(self):
         first_tu = fromxml(self.xml_tu)

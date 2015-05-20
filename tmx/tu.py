@@ -39,10 +39,11 @@ class TU(object):
     def __eq__(self, other):
         return self.get_source_hash() == other.get_source_hash()
 
+    def __ne__(self, other):
+        return self.get_source_hash() != other.get_source_hash()
+
     def toxml(self):
-        '''creates xml tuv element according to TMX specification
-        TODO: does not preserve context information
-        '''
+        '''creates xml tuv element according to TMX specification'''
         tuv = ET.Element('tu')
         tuv.attrib.update(self.attributes)
         for prop_name, prop_value in self.properties.items():
