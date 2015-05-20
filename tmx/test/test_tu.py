@@ -86,5 +86,18 @@ class TestTU(unittest.TestCase):
             'FooBaz',
             'creationid not updated')
 
+    def test_equal_returns_true(self):
+        first_tu = fromxml(self.xml_tu)
+        same_tu = fromxml(self.xml_tu)
 
+        self.assertEqual(first_tu == same_tu, True, 'Same TUs are not equal')
 
+    def test_not_equal_returns_false(self):
+        first_tu = fromxml(self.xml_tu)
+        other_tu = fromxml(self.xml_tu)
+        other_tu.source = 'Do not integrate'
+
+        self.assertEqual(
+            first_tu == other_tu,
+            False,
+            'Different TUs are equal')

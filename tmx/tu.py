@@ -36,6 +36,9 @@ class TU(object):
         if tuv is not None:
             self.fromxml(xml_tu=tuv)
 
+    def __eq__(self, other):
+        return self.get_source_hash() == other.get_source_hash()
+
     def toxml(self):
         '''creates xml tuv element according to TMX specification
         TODO: does not preserve context information
