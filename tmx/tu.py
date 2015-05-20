@@ -86,3 +86,7 @@ class TU(object):
     def get_source_hash(self):
         '''calculates hash of the source text - used to detect repetitions'''
         return md5(codecs.encode(self.source)).hexdigest()
+
+    def changeuserid(self, new_id):
+        self.attributes['creationid'] = self.attributes['changeid'] = new_id
+        return self
