@@ -16,21 +16,25 @@ def create_properties_dict(element):
     return properties
 
 
+def fromxml(tu_element):
+    return TU(tuv=tu_element)
+
+
 class TU(object):
 
     """TU - translation unit"""
 
-    def __init__(self, tuv=''):
+    def __init__(self, tuv=None):
 
         self.source = ""
         self.target = ""
-        #custom properties for a translation unit
+        # custom properties for a translation unit
         self.properties = dict()
-        #obligatory attributes for a translation unit
+        # obligatory attributes for a translation unit
         self.attributes = dict()
         self.language_pair = LanguagePair(source='', target='')
         if tuv is not None:
-            self.fromxml(tuv)
+            self.fromxml(xml_tu=tuv)
 
     def toxml(self):
         '''creates xml tuv element according to TMX specification
