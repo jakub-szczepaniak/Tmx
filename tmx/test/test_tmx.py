@@ -1,9 +1,10 @@
 import unittest
 from unittest.mock import patch
-from tmx.tmx import fromstring
-from tmx.tmx import fromfile
-from tmx.tmx import Tmx
-from tmx.tu import TU
+import tmx
+from tmx import fromstring
+from tmx import fromfile
+from tmx import Tmx
+from tmx import TU
 from lxml import etree as ET
 
 

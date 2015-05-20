@@ -1,1 +1,6 @@
+colorama==0.3.3
+foo==0.0
 lxml==3.4.3
+py==1.4.27
+pytest==2.7.1
+test-pkg==0.0
