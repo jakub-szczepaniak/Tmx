@@ -4,7 +4,7 @@ import unittest
 from tmx.tu import fromxml
 from tmx.tu import LanguagePair
 
-from tmx import TU
+from tmx import TU, TransUnit
 from lxml import etree as ET
 
 
@@ -102,6 +102,7 @@ class TestTU(unittest.TestCase):
             False,
             'Different TUs are equal')
 
+    @unittest.skip('waiting for different implementation')
     def test_toxml_creates_expected_xml_element(self):
         new_tu = fromxml(self.xml_tu)
 
@@ -109,3 +110,36 @@ class TestTU(unittest.TestCase):
 
         reloaded_tu = fromxml(saved_element)
         self.assertEqual(reloaded_tu, new_tu)
+
+
+class TestNewTU(unittest.TestCase):
+
+    def setUp(self):
+        self.attributes = {
+            'creationid': 'Milengo',
+            'changeid': 'Bar',
+            'creationdate': '20141017T092614Z',
+            'changedate': '20141017T092614Z'}
+        self.lang_pair = ('en', 'de')
+        self.properties = {
+            'client': 'Milengo',
+            'domain': 'IT - Network & Infrastructure'
+        }
+
+    def tearDown(self):
+        pass
+
+    def test_new_tu_is_created(self):
+        self.assertIsInstance(TransUnit('', ''), TransUnit)
+
+    def test_new_tu_has_language_pair(self):
+        new_tu = TransUnit('', '', lang_pair=self.lang_pair)
+        self.assertEqual(new_tu.lang_pair, self.lang_pair)
+
+    def test_new_tu_has_obligatory_attributes(self):
+        new_tu = TransUnit('', '', attributes=self.attributes)
+        self.assertEqual(new_tu.attributes, self.attributes)
+
+    def test_new_tu_has_properties(self):
+        new_tu = TransUnit('', '', properties=self.properties)
+        self.assertEqual(new_tu.properties, self.properties)

@@ -1,10 +1,12 @@
 from lxml import etree as ET
+from lxml.builder import ElementMaker
 from collections import namedtuple
 from hashlib import md5
 import codecs
 
 
-TMX_NAMESPACE = "{http://www.w3.org/XML/1998/namespace}"
+TMX_NAMESPACE = "http://www.w3.org/XML/1998/namespace"
+TMX = "{%s}" % TMX_NAMESPACE
 LanguagePair = namedtuple('LanguagePair', ['source', 'target'])
 
 
@@ -23,6 +25,13 @@ def fromxml(tu_element):
 class TU(object):
 
     """TU - translation unit"""
+    E = ElementMaker(
+        namespace=TMX_NAMESPACE,
+        nsmap={None: TMX_NAMESPACE})
+    TRANS_UNIT = E.tu
+    TUV = E.tuv
+    PROP = E.prop
+    SEG = E.seg
 
     def __init__(self, tuv=None):
 
@@ -42,21 +51,45 @@ class TU(object):
     def __ne__(self, other):
         return self.get_source_hash() != other.get_source_hash()
 
+    def __create_tuv(self):
+
+        source = TU.E.tuv(
+            self.__create_seg(self.source),
+            {'lang': self.language_pair.source})
+        target = TU.E.tuv(
+            self.__create_seg(self.source),
+            {'lang': self.language_pair.target})
+        return [source, target]
+
+    def __create_seg(self, text):
+        return TU.E.seg(text)
+
+    def __create_properties(self):
+        
+        return [TU.PROP({'type': k}, v) for k, v in self.properties]
+
     def toxml(self):
         '''creates xml tuv element according to TMX specification'''
-        tuv = ET.Element('tu')
+        new_tuv = TU.E.tu(
+            self.attributes,
+            *self.__create_properties()
+            )
+
+        print(ET.tostring(new_tuv, pretty_print=True))
+        NSMAP = {None: TMX_NAMESPACE}
+        tuv = ET.Element(TMX + 'tu', nsmap=NSMAP)
         tuv.attrib.update(self.attributes)
         for prop_name, prop_value in self.properties.items():
-            prop = ET.SubElement(tuv, 'property')
+            prop = ET.SubElement(tuv, TMX + 'property')
             prop.attrib['type'] = prop_name
             prop.text = prop_value
 
-        tu1 = ET.SubElement(tuv, 'tuv')
+        tu1 = ET.SubElement(tuv, TMX + 'tuv')
         tu1.attrib['lang'] = self.language_pair[0]
         seg1 = ET.fromstring('<seg>{}</seg>'.format(self.source))
         tu1.append(seg1)
 
-        tu2 = ET.SubElement(tuv, 'tuv')
+        tu2 = ET.SubElement(tuv, TMX + 'tuv')
         tu2.attrib['lang'] = self.language_pair[1]
         seg2 = ET.fromstring('<seg>{}</seg>'.format(self.target))
         tu2.append(seg2)
@@ -71,10 +104,10 @@ class TU(object):
             self.attributes.update(xml_tu.attrib)
 
             list_tuv = xml_tu.findall('tuv')
-
+            
             self.language_pair = LanguagePair(
-                list_tuv[0].attrib['{}lang'.format(TMX_NAMESPACE)],
-                list_tuv[1].attrib['{}lang'.format(TMX_NAMESPACE)])
+                list_tuv[0].attrib['{}lang'.format(TMX)],
+                list_tuv[1].attrib['{}lang'.format(TMX)])
             segments = xml_tu.findall('./tuv/seg')
             self.source = ET.tostring(
                 segments[0],
@@ -85,7 +118,7 @@ class TU(object):
                 method='text',
                 encoding='unicode')
         else:
-            raise AttributeError('Not valid Translation Unit')
+            raise AttributeError('Not valid Translation Unit' + xml_tu.tag)
 
     def get_source_hash(self):
         '''calculates hash of the source text - used to detect repetitions'''
@@ -94,3 +127,22 @@ class TU(object):
     def changeuserid(self, new_id):
         self.attributes['creationid'] = self.attributes['changeid'] = new_id
         return self
+
+
+class TransUnit(object):
+
+    def __init__(
+            self,
+            source,
+            target,
+            lang_pair=('', ''),
+            attributes={},
+            properties={}):
+        self.lang_pair = lang_pair
+        self.attributes = attributes
+        self.properties = properties
+        self.source = source
+        self.target = target
+
+    def toxml(self):
+        pass
