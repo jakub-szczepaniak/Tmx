@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+
 
 from tmx.tu import fromxml
 from tmx.tu import LanguagePair
@@ -101,3 +101,11 @@ class TestTU(unittest.TestCase):
             first_tu == other_tu,
             False,
             'Different TUs are equal')
+
+    def test_toxml_creates_expected_xml_element(self):
+        new_tu = fromxml(self.xml_tu)
+
+        saved_element = new_tu.toxml()
+
+        reloaded_tu = fromxml(saved_element)
+        self.assertEqual(reloaded_tu, new_tu)
