@@ -144,5 +144,16 @@ class TransUnit(object):
         self.source = source
         self.target = target
 
-    def toxml(self):
-        pass
+
+def toxml(transunit):
+    TMX_NAMESPACE = "http://www.w3.org/XML/1998/namespace"
+    TMX = "{%s}" % TMX_NAMESPACE
+    E = ElementMaker(
+        namespace=TMX_NAMESPACE,
+        nsmap={None: TMX_NAMESPACE})
+    TU = E.tu
+    TUV = E.tuv
+    PROP = E.prop
+    SEG = E.seg
+    
+    return TU(transunit.attributes)

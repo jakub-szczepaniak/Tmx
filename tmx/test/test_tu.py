@@ -4,7 +4,7 @@ import unittest
 from tmx.tu import fromxml
 from tmx.tu import LanguagePair
 
-from tmx import TU, TransUnit
+from tmx import TU, TransUnit, toxml
 from lxml import etree as ET
 
 
@@ -125,6 +125,8 @@ class TestNewTU(unittest.TestCase):
             'client': 'Milengo',
             'domain': 'IT - Network & Infrastructure'
         }
+        self.source = 'Integrate with Tinypass'
+        self.target = '与 Tinypass 集成'
 
     def tearDown(self):
         pass
@@ -143,3 +145,41 @@ class TestNewTU(unittest.TestCase):
     def test_new_tu_has_properties(self):
         new_tu = TransUnit('', '', properties=self.properties)
         self.assertEqual(new_tu.properties, self.properties)
+
+    def test_new_tu_stores_source_and_target(self):
+        new_tu = TransUnit(self.source, self.target)
+        self.assertEqual(new_tu.source, self.source)
+        self.assertEqual(new_tu.target, self.target)
+
+
+class TestTransUnitXMLSerializer(unittest.TestCase):
+
+    def setUp(self):
+        self.tu = TransUnit(
+            'Integrate with Tinypass',
+            '与 Tinypass 集成',
+            lang_pair=('en', 'de'),
+            properties={
+                'client': 'Milengo',
+                'domain': 'IT - Network & Infrastructure'},
+            attributes={
+                'creationid': 'Milengo',
+                'changeid': 'Bar',
+                'creationdate': '20141017T092614Z',
+                'changedate': '20141017T092614Z'}
+                )
+
+    def tearDown(self):
+        pass
+
+    def test_toxml_generates_tmx_element_with_attributes(self):
+        result = toxml(self.tu)
+        attributes = result.attrib
+
+        self.assertIsInstance(result, ET._Element)
+        self.assertEqual(
+            attributes,
+            {'creationid': 'Milengo',
+                'changeid': 'Bar',
+                'creationdate': '20141017T092614Z',
+                'changedate': '20141017T092614Z'})
