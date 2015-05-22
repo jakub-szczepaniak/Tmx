@@ -155,5 +155,9 @@ def toxml(transunit):
     TUV = E.tuv
     PROP = E.prop
     SEG = E.seg
-    
-    return TU(transunit.attributes)
+    prop = [PROP({'type': k}, v) for k, v in transunit.properties.items()]
+    source = TUV({'lang': transunit.lang_pair[0]}, SEG(transunit.source))
+    target = TUV({'lang': transunit.lang_pair[1]}, SEG(transunit.target))
+    result = TU(transunit.attributes, source, target, *prop)
+    print(ET.tostring(result, pretty_print=True))
+    return result

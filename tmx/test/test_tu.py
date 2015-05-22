@@ -183,3 +183,28 @@ class TestTransUnitXMLSerializer(unittest.TestCase):
                 'changeid': 'Bar',
                 'creationdate': '20141017T092614Z',
                 'changedate': '20141017T092614Z'})
+
+    def test_toxml_saves_properties(self):
+        result = toxml(self.tu)
+
+        self.assertEqual(
+            len(
+                result.findall(
+                    '{http://www.w3.org/XML/1998/namespace}prop')),
+            2)
+
+    def test_to_xml_saves_source(self):
+        result = toxml(self.tu)
+
+        source_element = result.findall(
+            '{http://www.w3.org/XML/1998/namespace}tuv')
+        self.assertNotEqual(len(source_element), 0)
+        self.assertEqual(source_element[0].attrib, {'lang': 'en'})
+
+    def test_toxml_saves_target(self):
+        result = toxml(self.tu)
+
+        target_element = result.findall(
+            '{http://www.w3.org/XML/1998/namespace}tuv')
+        self.assertNotEqual(len(target_element), 0)
+        self.assertEqual(target_element[1].attrib, {'lang': 'de'})
